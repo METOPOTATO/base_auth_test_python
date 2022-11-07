@@ -9,7 +9,7 @@ class User(AbstractUser):
     email = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
     token = models.CharField(max_length=128, blank=True)
-    username = None
+    username = models.CharField(max_length=255, default='', null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

@@ -86,11 +86,17 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'base_auth',
-        'USER': 'root',
-        'PASSWORD': '1s2heaven@'
+        'NAME': env('MYSQL_DATABASE'),
+        'HOST': env('MYSQL_HOST'),
+        'PORT': env('MYSQL_PORT'),
+        'USER': env('MYSQL_USER'),
+        'PASSWORD': env('MYSQL_PASSWORD')
     }
 }
+
+# DATABASES['default']['NAME'] = env('MYSQL_DATABASE')
+# DATABASES['default']['USER'] = env('MYSQL_USER')
+# DATABASES['default']['PASSWORD'] = env('MYSQL_PASSWORD')
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': timedelta(hours=6),

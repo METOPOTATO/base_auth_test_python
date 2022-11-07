@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  mysql:
+    image: "mysql:latest"
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: test-mysql
+    hostname: test-mysql
+    networks:
+      - test-network
+    env_file:
+      - .env
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/my.cnf:/etc/mysql/my.cnf
+
+  adminer:
+    container_name: test-adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8002:8080
+    networks:
+      - test-network
+
+  app:
+    container_name: test-python
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: bash -c 'pip install -r requirements.txt && python3 manage.py runserver 0.0.0.0:8000'
+    volumes:
+      - ./:/base
+    ports:
+      - 8001:8000
+    depends_on:
+      - mysql
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
