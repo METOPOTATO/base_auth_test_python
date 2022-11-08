@@ -101,7 +101,6 @@ DATABASES = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': timedelta(hours=6),
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'api.utils.jwt_handler.jwt_response_payload_handler',
-    'JWT_GET_USER_SECRET_KEY': 'api.utils.jwt_handler.jwt_get_user_secret_key',
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
@@ -162,8 +161,12 @@ REST_FRAMEWORK = {
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('EMAIL_HOST_PASSWORD')
+
+FRONT_END_URL = 'http://localhost:8001/'
+BACK_END_URL = 'http://localhost:8001/'

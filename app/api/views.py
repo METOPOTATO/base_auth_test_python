@@ -6,8 +6,9 @@ from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
 from .models import User
+from .utils.mail_handler import create_verify_email
 from .serializers import UserSerializer
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
 # Create your views here.
 
@@ -52,18 +53,24 @@ class UserDetailView(APIView):
 
 
 class EmailVerifyView(APIView):
-    permission_classes = [IsAuthenticated]
+    authentication_classes = []
+    permission_classes = []
     # generate a token and send to email to verify
 
     def post(self, request):
-        send_mail(
-            subject='Reset password',
-            message='This is link reset password.',
-            from_email=settings.EMAIL_HOST_USER,
-            recipient_list=['linhstartwork@gmail.com'],
-            fail_silently=False,
-        )
+        email = request.data['email']
+        user = User.objects.filter(email=email).first()
+        if user:
+            create_verify_email(user, [user.email])
+            return Response({'Result': 'OK'})
+        return Response({'Result': 'User is not found'})
 
     # get token
     def get(self, request):
-        pass
+        token = request.data['token']
+        user = User.objects.filter(token=token, is_active=False).first()
+        if user:
+            user.is_active = True
+            user.save()
+            return Response({'Result': 'OK'})
+        return Response({'Result': token})
