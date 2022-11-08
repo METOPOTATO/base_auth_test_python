@@ -7,7 +7,7 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'name', 'email', 'password']
+        fields = ['username', 'name', 'email', 'password']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance = self.Meta.model(**validated_data)
         if pw is not None:
             instance.set_password(pw)
-            instance.is_active = False
+            # instance.is_active = False
             instance.save()
 
         return instance

@@ -13,6 +13,9 @@ from django.conf import settings
 
 
 class RegisterView(APIView):
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -23,6 +26,9 @@ class RegisterView(APIView):
 
 
 class LoginView(ObtainJSONWebToken):
+    authentication_classes = []
+    permission_classes = []
+
     def post(self, request, *args, **kwargs):
         email = request.data['email']
         password = request.data['password']
