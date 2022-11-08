@@ -70,7 +70,7 @@ class EmailVerifyView(APIView):
 
     # get token
     def get(self, request):
-        token = request.data['token']
+        token = request.query_params['token']
         user = User.objects.filter(token=token, is_active=False).first()
         if user:
             user.is_active = True

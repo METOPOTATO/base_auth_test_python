@@ -8,7 +8,7 @@ def create_verify_email(user, recipient_list):
     # frontend_link = settings.FRONT_END_URL
 
     # use tmp url
-    link = settings.FRONT_END_URL + '/api/user/email/verify?token='
+    link = settings.BACK_END_URL + 'api/user/email/verify?token='
 
     token = user.token
 
