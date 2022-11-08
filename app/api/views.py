@@ -1,13 +1,14 @@
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_jwt.views import ObtainJSONWebToken
 
 from .models import User
-from .utils.mail_handler import create_verify_email
 from .serializers import UserSerializer
+from .utils.mail_handler import create_verify_email
 from .utils.messages import RESPONSE_ERRORS, RESPONSE_OK
-from rest_framework import status
+
 # Create your views here.
 
 
