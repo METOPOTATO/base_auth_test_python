@@ -63,4 +63,4 @@ class EmailVerifyView(APIView):
             user.is_active = True
             user.save()
             return Response({'Result': RESPONSE_OK.DEFAULT})
-        return Response({'Result': token})
+        return Response(status=status.HTTP_404_NOT_FOUND, data={'result': RESPONSE_ERRORS.USER_NOT_FOUND})
