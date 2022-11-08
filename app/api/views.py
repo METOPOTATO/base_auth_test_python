@@ -7,6 +7,7 @@ from .models import User
 from .utils.mail_handler import create_verify_email
 from .serializers import UserSerializer
 from .utils.messages import RESPONSE_ERRORS, RESPONSE_OK
+from rest_framework import status
 # Create your views here.
 
 
@@ -17,10 +18,11 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            create_verify_email(user, [user.email])
             return Response(serializer.data)
 
-        return Response({'result': RESPONSE_ERRORS.INVALID_DATA})
+        return Response(status=status.HTTP_400_BAD_REQUEST, data={'result': RESPONSE_ERRORS.INVALID_DATA})
 
 
 class LoginView(ObtainJSONWebToken):
@@ -33,10 +35,10 @@ class LoginView(ObtainJSONWebToken):
 
         user = User.objects.filter(email=email).first()
         if user is None:
-            return Response({'result': RESPONSE_ERRORS.USER_NOT_FOUND})
+            return Response(status=status.HTTP_404_NOT_FOUND, data={'result': RESPONSE_ERRORS.USER_NOT_FOUND})
 
         if not user.check_password(password):
-            return Response({'result': RESPONSE_ERRORS.WRONG_PW})
+            return Response(status=status.HTTP_400_BAD_REQUEST, data={'result': RESPONSE_ERRORS.WRONG_PW})
 
         return super().post(request, *args, **kwargs)
 
@@ -52,15 +54,6 @@ class UserDetailView(APIView):
 class EmailVerifyView(APIView):
     authentication_classes = []
     permission_classes = []
-    # generate a token and send to email to verify
-
-    def post(self, request):
-        email = request.data['email']
-        user = User.objects.filter(email=email).first()
-        if user:
-            create_verify_email(user, [user.email])
-            return Response({'Result': RESPONSE_OK.DEFAULT})
-        return Response({'Result': RESPONSE_ERRORS.USER_NOT_FOUND})
 
     # get token
     def get(self, request):
