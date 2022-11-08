@@ -1,9 +1,12 @@
 from rest_framework import serializers
 import uuid
 from .models import User
+from .utils.common_functions import _validate_email, _validate_password
 
 
 class UserSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(required=False)
+
     class Meta:
         model = User
         fields = ['username', 'name', 'email', 'password']
@@ -21,4 +24,14 @@ class UserSerializer(serializers.ModelSerializer):
                 uuid.NAMESPACE_OID, instance.email))
             instance.save()
 
+        return instance
+
+    def validate(self, instance):
+        validate_email = _validate_email(instance['email'])
+        if validate_email is not True:
+            raise serializers.ValidationError(validate_email)
+
+        validate_password = _validate_password(instance['password'])
+        if validate_password is not True:
+            raise serializers.ValidationError(validate_password)
         return instance
