@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-# from dataclasses import field
+import uuid
 from .models import User
 
 
@@ -17,7 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
         instance = self.Meta.model(**validated_data)
         if pw is not None:
             instance.set_password(pw)
-            # instance.is_active = False
+            instance.is_active = False
+            instance.token = str(uuid.uuid3(
+                uuid.NAMESPACE_OID, instance.email))
             instance.save()
 
         return instance
