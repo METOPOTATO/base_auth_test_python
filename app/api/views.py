@@ -1,5 +1,3 @@
-from multiprocessing import AuthenticationError
-
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -8,8 +6,7 @@ from rest_framework_jwt.views import ObtainJSONWebToken
 from .models import User
 from .utils.mail_handler import create_verify_email
 from .serializers import UserSerializer
-from django.core.mail import send_mail, EmailMessage
-from django.conf import settings
+from .utils.messages import RESPONSE_ERRORS, RESPONSE_OK
 # Create your views here.
 
 
@@ -23,7 +20,7 @@ class RegisterView(APIView):
             serializer.save()
             return Response(serializer.data)
 
-        return Response(data='Error')
+        return Response({'result': RESPONSE_ERRORS.INVALID_DATA})
 
 
 class LoginView(ObtainJSONWebToken):
@@ -36,10 +33,10 @@ class LoginView(ObtainJSONWebToken):
 
         user = User.objects.filter(email=email).first()
         if user is None:
-            raise AuthenticationError('User is not found')
+            return Response({'result': RESPONSE_ERRORS.USER_NOT_FOUND})
 
         if not user.check_password(password):
-            raise AuthenticationError('Incorrect password')
+            return Response({'result': RESPONSE_ERRORS.WRONG_PW})
 
         return super().post(request, *args, **kwargs)
 
@@ -62,8 +59,8 @@ class EmailVerifyView(APIView):
         user = User.objects.filter(email=email).first()
         if user:
             create_verify_email(user, [user.email])
-            return Response({'Result': 'OK'})
-        return Response({'Result': 'User is not found'})
+            return Response({'Result': RESPONSE_OK.DEFAULT})
+        return Response({'Result': RESPONSE_ERRORS.USER_NOT_FOUND})
 
     # get token
     def get(self, request):
@@ -72,5 +69,5 @@ class EmailVerifyView(APIView):
         if user:
             user.is_active = True
             user.save()
-            return Response({'Result': 'OK'})
+            return Response({'Result': RESPONSE_OK.DEFAULT})
         return Response({'Result': token})
