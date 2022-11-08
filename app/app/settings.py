@@ -13,14 +13,15 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import environ
+from api.utils.constant import DEFAULT_SETTINGS
+
 env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(env_file=BASE_DIR / '.env')
 
-print(BASE_DIR)
-print(environ.Path(__file__))
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -86,17 +87,19 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': env('MYSQL_DATABASE'),
-        'HOST': env('MYSQL_HOST'),
-        'PORT': env('MYSQL_PORT'),
-        'USER': env('MYSQL_USER'),
-        'PASSWORD': env('MYSQL_PASSWORD')
+        'NAME': env('MYSQL_DATABASE') if 'MYSQL_DATABASE' in env else DEFAULT_SETTINGS.MYSQL_DATABASE,
+        'HOST': env('MYSQL_HOST') if 'MYSQL_HOST' in env else DEFAULT_SETTINGS.MYSQL_HOST,
+        'PORT': env('MYSQL_PORT') if 'MYSQL_PORT' in env else DEFAULT_SETTINGS.MYSQL_PORT,
+        'USER': env('MYSQL_USER') if 'MYSQL_USER' in env else DEFAULT_SETTINGS.MYSQL_USER,
+        'PASSWORD': env('MYSQL_PASSWORD') if 'MYSQL_PASSWORD' in env else DEFAULT_SETTINGS.MYSQL_PASSWORD,
     }
 }
-
 # DATABASES['default']['NAME'] = env('MYSQL_DATABASE')
-# DATABASES['default']['USER'] = env('MYSQL_USER')
-# DATABASES['default']['PASSWORD'] = env('MYSQL_PASSWORD')
+# DATABASES['default']['HOST'] = env('MYSQL_DATABASE')
+# DATABASES['default']['PORT'] = env('MYSQL_DATABASE')
+# DATABASES['default']['USER'] = env('MYSQL_DATABASE')
+# DATABASES['default']['PASSWORD'] = env('MYSQL_DATABASE')
+
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': timedelta(hours=6),
@@ -164,9 +167,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = env(
+    'EMAIL_HOST_USER') if 'EMAIL_HOST_USER' in env else DEFAULT_SETTINGS.EMAIL_HOST_USER,
+EMAIL_HOST_PASSWORD = env(
+    'EMAIL_HOST_PASSWORD') if 'EMAIL_HOST_PASSWORD' in env else DEFAULT_SETTINGS.EMAIL_HOST_PASSWORD,
+DEFAULT_FROM_EMAIL = env(
+    'EMAIL_HOST_USER') if 'EMAIL_HOST_USER' in env else DEFAULT_SETTINGS.EMAIL_HOST_USER,
 
 FRONT_END_URL = 'http://localhost:8001/'
 BACK_END_URL = 'http://localhost:8001/'
